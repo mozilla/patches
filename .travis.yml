@@ -8,4 +8,26 @@ before_install:
 
 script:
   - make test
+  - zip -r latest *
+  - mkdir -p codedeploy_upload
+  - mv latest.zip codedeploy_upload/latest.zip
 
+deploy:
+  - provider: s3
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_KEY
+    local_dir: codedeploy_upload
+    on: &2
+      repo: mozilla/patches
+    bucket: patches-server
+    region: us-west-2
+  - provider: codedeploy
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_KEY
+    bucket: patches-server
+    key: latest.zip
+    bundle_type: zip
+    application: patchesservercodedeploy
+    deployment_group: PatchesServer-CodeDeploy
+    region: us-west-2
+    on: *2
