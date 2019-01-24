@@ -3,11 +3,7 @@ language: go
 go:
   - "1.11"
 
-before_install:
-  - make dependencies
-
 script:
-  - make test
   - zip -r latest *
   - mkdir -p codedeploy_upload
   - mv latest.zip codedeploy_upload/latest.zip
